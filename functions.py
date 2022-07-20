@@ -4,7 +4,7 @@ from variables import *
 import requests
 
 try: # IMPORTING CONFIG AS MODULE
-    from config import *
+    from config.config import *
 except:
     pass
 
@@ -19,22 +19,23 @@ def check_config(debug="False"):
 
     # Check for config
     try:
-        open("config.py",'r')
+        open("config/config.py",'r')
         if debug == "True":
             return 'Found Config'
         # Else we create it
     except:
         print("No config file found, creating now!")
         # Get paramaters
-        url = input('Enter your nextcloud url: ')
+        url = input('Enter your nextcloud url (https://...): ')
         user = input('Enter your username: ')
         password = input('Enter your password: ')
         # Write to file
-        with open ("config.py", 'a') as f:
-            f.write(f"#!/usr/bin/python3\n \
-                    url = \"{url}/ocs/v2.php/app/spreed/api/v4\"\n \
-                    user = \"{user}\"\n \
-                    password = \"{password}\"")
+        os.makedirs("config")
+        with open ("config/config.py", 'a') as f:
+            f.write(f"#!/usr/bin/python3\n\
+url = \"{url}/ocs/v2.php/apps/spreed/api/v4\"\n\
+user = \"{user}\"\n\
+password = \"{password}\"")
             print("App need to be restarted.. rerun")
             if debug == "True":
                 return 'Needed to create config'
@@ -51,7 +52,10 @@ def get_conversations(debug="False"):
     If file doesn't exist. Dictionary is created and dumped to a file
 
     debug="True" returns conversation in json format"""
-
+    try:
+        os.makedirs("cache")
+    except:
+        pass
     # Check for cache
     try:
         with open(f"{jsondir}/conversations.json", 'r') as lf:
